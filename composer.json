@@ -1,0 +1,23 @@
+{
+    "name": "oprokidnev/goalio-remember-me-doctrine-orm",
+    "description": "",
+    "type": "library",
+    "keywords": [],
+    "homepage": "",
+    "authors": [
+        {
+            "name": "Andrey Oprokidnev",
+            "email": "aa@oprokidnev.ru",
+            "homepage": "http://webmotor.ru/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "GoalioRememberMeDoctrineORM": "src/"
+        }
+    }
+}
