@@ -43,6 +43,7 @@ class Module extends \WmBase\Module\AbstractModule
                     $options = $sm->get('zfcuser_module_options');
                     $rememberOptions = $sm->get('goaliorememberme_module_options');
                     $mapper = new \GoalioRememberMeDoctrineORM\Mapper\RememberMe;
+                    $mapper->setServiceManager($sm);
                     // $mapper->setDbAdapter($sm->get('zfcuser_zend_db_adapter'));
                     $entityClass = $rememberOptions->getRememberMeEntityClass();
                     $mapper->setEntityPrototype(new $entityClass);

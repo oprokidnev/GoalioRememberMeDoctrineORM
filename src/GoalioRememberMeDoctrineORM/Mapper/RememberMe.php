@@ -7,7 +7,24 @@ use ZfcBase\Mapper\AbstractDbMapper,
 
 class RememberMe
 {
+    /**
+     *
+     * @var \Zend\ServiceManager\ServiceManager
+     */
+    protected $serviceManager;
+    
+    public function getServiceManager()
+    {
+        return $this->serviceManager;
+    }
 
+    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceManager)
+    {
+        $this->serviceManager = $serviceManager;
+        return $this;
+    }
+
+        
     protected $tableName = 'user_remember_me';
 
     public function setEntityPrototype($entityPrototype)
@@ -30,7 +47,7 @@ class RememberMe
      */
     public function getEntityManager()
     {
-        return ServiceLocatorFactory::getInstance()->get('doctrine.entitymanager.orm_default');
+        return $this->getServiceManager()->get('doctrine.entitymanager.orm_default');
     }
 
     public function findById($userId)
