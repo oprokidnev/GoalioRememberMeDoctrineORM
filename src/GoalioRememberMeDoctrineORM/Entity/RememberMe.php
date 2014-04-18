@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM,
 /**
  * @ORM\Entity
  * @ORM\Table(
- *     name="WM2_User_Cookie_Provider"
+ *     name="WM2_User_Cookie_Provider",indexes={@ORM\Index(name="idx", columns={"sid", "userId"})}
  * )
  */
 class RememberMe
