@@ -9,7 +9,10 @@ use Doctrine\ORM\Mapping as ORM,
 /**
  * @ORM\Entity
  * @ORM\Table(
- *     name="WM2_User_Cookie_Provider",indexes={@ORM\Index(name="idx", columns={"sid", "userId"})}
+ *     name="WM2_User_Cookie_Provider",indexes={
+ *          @ORM\Index(name="idx", columns={"sid", "userId"}),
+ *          @ORM\Index(name="userId", columns={"userId"}),
+ *     }
  * )
  */
 class RememberMe
@@ -34,7 +37,7 @@ class RememberMe
     protected $token;
 
     /**
-     * @ORM\Column(type="integer", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $userId;
 

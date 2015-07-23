@@ -52,7 +52,6 @@ class RememberMe
 
     public function findById($userId)
     {
-
         $select = $this->getSelect()
             ->where(array('user_id' => $userId));
 
