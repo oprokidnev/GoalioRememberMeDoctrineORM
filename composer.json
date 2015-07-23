@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "goalio/goalio-rememberme": "1.*",
+        "goalio/goalio-rememberme": "*",
         "zendframework/zendframework": "2.*"
     },
     "autoload": {
