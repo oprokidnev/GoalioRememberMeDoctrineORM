@@ -5,49 +5,65 @@ namespace GoalioRememberMeDoctrineORM\Mapper;
 use ZfcBase\Mapper\AbstractDbMapper,
     \ServiceLocatorFactory\ServiceLocatorFactory;
 
-class RememberMe
+class RememberMe extends \ZfcBase\Mapper\AbstractDbMapper
 {
-    /**
-     *
-     * @var \Zend\ServiceManager\ServiceManager
-     */
-    protected $serviceManager;
-    
-    public function getServiceManager()
+
+    public static function createViaServiceLocator($serviceLocator)
     {
-        return $this->serviceManager;
+        $moduleConfig  = $serviceLocator->get(\GoalioRememberMeDoctrineORM\Options\ModuleOptions::class);
+        $objectManager = $serviceLocator->get($moduleConfig->getObjectManager());
+
+        $rememberOptions = $serviceLocator->get('goaliorememberme_module_options');
+
+        return new static($objectManager, $rememberOptions);
     }
 
-    public function setServiceManager(\Zend\ServiceManager\ServiceManager $serviceManager)
+    protected $objectManager     = null;
+    protected $rememberMeOptions = null;
+
+    public function __construct(\Doctrine\Common\Persistence\ObjectManager $objectManager, \GoalioRememberMe\Options\ModuleOptions $rememberMeOptions)
     {
-        $this->serviceManager = $serviceManager;
+        list($this->objectManager, $this->rememberMeOptions) = [$objectManager, $rememberMeOptions];
+        if ($objectManager instanceof \Doctrine\ORM\EntityManager) {
+            $this->setEntityPrototype(new \GoalioRememberMeDoctrineORM\Entity\RememberMe);
+        } elseif ($objectManager instanceof \Doctrine\ODM\MongoDB\DocumentManager) {
+            $this->setEntityPrototype(new \GoalioRememberMeDoctrineORM\Document\RememberMe);
+        }
+
+        $this->setHydrator(new \Zend\Stdlib\Hydrator\ClassMethods());
+
         return $this;
     }
-
-        
-    protected $tableName = 'user_remember_me';
 
     public function setEntityPrototype($entityPrototype)
     {
-        $this->entityPrototype = $entityPrototype;
+        $this->entityPrototype    = $entityPrototype;
         $this->resultSetPrototype = null;
         return $this;
     }
 
-    public function setHydrator($hydrator)
+    protected $objectRepository = null;
+
+    protected function getRepository()
     {
-        $this->hydrator = $hydrator;
-        $this->resultSetPrototype = null;
-        return $this;
+        if ($this->objectRepository === null) {
+            $this->objectRepository = $this->objectManager->getRepository($this->getMappedObjectClass());
+        }
+        return $this->objectRepository;
     }
+
+    protected $mappedObjectClass = null;
 
     /**
      * 
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getEntityManager()
+    public function getMappedObjectClass()
     {
-        return $this->getServiceManager()->get('doctrine.entitymanager.orm_default');
+        if ($this->mappedObjectClass === null) {
+            $this->mappedObjectClass = get_class($this->entityPrototype);
+        }
+        return $this->mappedObjectClass;
     }
 
     public function findById($userId)
@@ -56,18 +72,17 @@ class RememberMe
             ->where(array('user_id' => $userId));
 
         $entity = $this->select($select)->current();
-        $this->getEventManager()->trigger('find', $this,
-            array('entity' => $entity));
+        $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
         return $entity;
     }
 
     public function findByIdSerie($userId, $serieId)
     {
-        $em = $this->getEntityManager();
+        $em = $this->objectManager;
 
-        $entity = $em->getRepository('\GoalioRememberMeDoctrineORM\Entity\RememberMe')->findOneBy([
+        $entity = $this->getRepository()->findOneBy([
             'userId' => $userId,
-            'sid' => $serieId,
+            'sid'    => $serieId,
         ]);
 
         return $entity;
@@ -75,55 +90,65 @@ class RememberMe
 
     public function updateSerie($entity)
     {
-        $em = $this->getEntityManager();
+        $em = $this->objectManager;
 
         $em->persist($entity);
-        $em->flush();
-        
+        $em->flush($entity);
+
         return $this;
     }
 
     public function createSerie($entity)
     {
-        $em = $this->getEntityManager();
+        $em = $this->objectManager;
 
         $em->persist($entity);
-        $em->flush();
+        $em->flush($entity);
 
         return $this;
     }
 
     public function removeAll($userId)
     {
-        $em = $this->getEntityManager();
-        $entities = $em->getRepository('\GoalioRememberMeDoctrineORM\Entity\RememberMe')->findBy([
+        $em       = $this->objectManager;
+        $entities = $this->getRepository()->findBy([
             'userId' => $userId,
         ]);
         foreach ($entities as $entity) {
-        $em->remove($entity);
+            $em->remove($entity);
         }
-        $em->flush();
+        $em->flush($entity);
         return $this;
     }
 
     public function remove($entity)
     {
-        $em = $this->getEntityManager();
+        $em = $this->objectManager;
         $em->remove($entity);
-        $em->flush();
+        $em->flush($entity);
         return $this;
     }
 
+    /**
+     * 
+     * @param type $userId
+     * @param type $serieId
+     * @return \GoalioRememberMeDoctrineORM\Mapper\RememberMe
+     */
     public function removeSerie($userId, $serieId)
     {
-       $em = $this->getEntityManager();
+        $em     = $this->objectManager;
+        $entity = $this->findByIdSerie($userId, $serieId);
 
-        $entity = $em->getRepository('\GoalioRememberMeDoctrineORM\Entity\RememberMe')->findOneBy([
+        $entity = $this->getRepository()->findOneBy([
             'userId' => $userId,
-            'sid' => $serieId,
+            'sid'    => $serieId,
         ]);
-        $em->remove($entity);
-        $em->flush();
+        if ($entity) {
+            $em->remove($entity);
+            $em->flush($entity);
+        }
+
         return $this;
     }
 

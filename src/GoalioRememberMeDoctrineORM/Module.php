@@ -6,15 +6,15 @@ use Zend\ModuleManager\Feature;
 use Users\View\Helper\SectionMenu;
 use Zend\Authentication\AuthenticationService;
 
-class Module extends \WmBase\Module\AbstractModule
-    implements Feature\ServiceProviderInterface
+class Module
 {
 
     public function getDir()
     {
         return __DIR__;
     }
-     public function getConfig()
+
+    public function getConfig()
     {
         return include $this->getDir() . '/../../config/module.config.php';
     }
@@ -24,52 +24,37 @@ class Module extends \WmBase\Module\AbstractModule
         return __NAMESPACE__;
     }
 
-    public function init()
-    {
-        $namespace = 'Gedmo\Mapping\Annotation';
-        $lib = 'vendor/gedmo/doctrine-extensions/lib';
-        \Doctrine\Common\Annotations\AnnotationRegistry::registerAutoloadNamespace($namespace,
-            $lib);
-    }
+    protected $moduleEnvironment = [];
 
-    public function getServiceConfig()
+    /**
+     * 
+     * @param \Zend\ModuleManager\ModuleManager $moduleManager
+     */
+    public function init(\Zend\ModuleManager\ModuleManager $moduleManager)
     {
-        return array(
-            'aliases' => array(
-                'doctrine_dm' => 'doctrine.entitymanager.orm_default',
-            ),
-            'factories' => array(
-                'goaliorememberme_rememberme_mapper' => function ($sm) {
-                    $options = $sm->get('zfcuser_module_options');
-                    $rememberOptions = $sm->get('goaliorememberme_module_options');
-                    $mapper = new \GoalioRememberMeDoctrineORM\Mapper\RememberMe;
-                    $mapper->setServiceManager($sm);
-                    // $mapper->setDbAdapter($sm->get('zfcuser_zend_db_adapter'));
-                    $entityClass = $rememberOptions->getRememberMeEntityClass();
-                    $mapper->setEntityPrototype(new $entityClass);
-                    
-                    $mapper->setHydrator(new \GoalioRememberMe\Mapper\RememberMeHydrator());
-                    
-                    return $mapper;
-                },
-            ),
-        );
+        $this->moduleEnvironment = $moduleManager->getModules();
+        $moduleManager->getEventManager()->attach(\Zend\ModuleManager\ModuleEvent::EVENT_MERGE_CONFIG, [$this, 'onMergeConfig']);
     }
 
     /**
      * 
-     * @return array
+     * @param \Zend\ModuleManager\ModuleEvent $event
      */
-    public function getAutoloaderConfig()
+    public function onMergeConfig(\Zend\ModuleManager\ModuleEvent $event)
     {
-       return [
-            'Zend\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__,
-                ],
-            ],
-           
-        ];
+        $configListener = $event->getConfigListener();
+        $unmerged       = $configListener->getMergedConfig(false);
+
+        /**
+         * Use doctrine odm or doctrine orm.
+         */
+        if (in_array(\DoctrineORMModule::class, $this->moduleEnvironment)) {
+            $configListener->setMergedConfig(\Zend\Stdlib\ArrayUtils::merge($configListener->getMergedConfig(false), require $this->getDir() . '/../../config/doctrine.orm.php'));
+        }
+
+        if (in_array(\DoctrineMongoODMModule::class, $this->moduleEnvironment) && stristr($unmerged['goaliorememberme_doctrine']['object_manager'], 'document')) {
+            $configListener->setMergedConfig(\Zend\Stdlib\ArrayUtils::merge($configListener->getMergedConfig(false), require $this->getDir() . '/../../config/doctrine.odm.php'));
+        }
     }
 
 }
