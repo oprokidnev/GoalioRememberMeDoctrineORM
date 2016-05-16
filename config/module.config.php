@@ -8,7 +8,7 @@ return array(
         ],
     ],
     'goaliorememberme_doctrine' => [
-        'object_manager' => 'doctrine.entity_manager.orm_default',
+        'object_manager' => 'doctrine.entitymanager.orm_default',
     ],
     'zfcuser'                   => [
         /**
