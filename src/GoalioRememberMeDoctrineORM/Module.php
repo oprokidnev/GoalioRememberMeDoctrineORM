@@ -57,7 +57,7 @@ class Module
     {
         $configListener = $event->getConfigListener();
         $unmerged       = $configListener->getMergedConfig(false);
-
+        
         /**
          * Use doctrine odm or doctrine orm.
          */
