@@ -14,7 +14,7 @@
     "require": {
         "php": ">=5.3.3",
         "goalio/goalio-rememberme": "*",
-        "zendframework/zendframework": "2.*"
+        "doctrine/doctrine-module": "^1.0 || ^0.8"
     },
     "autoload": {
         "psr-0": {
