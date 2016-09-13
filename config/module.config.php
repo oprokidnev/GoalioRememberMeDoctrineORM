@@ -22,6 +22,21 @@ return [
         'factories'=>[
             'goaliorememberme_rememberme_mapper'=>[\GoalioRememberMeDoctrineORM\Mapper\RememberMe::class, 'createViaServiceLocator'],
              \GoalioRememberMeDoctrineORM\Options\ModuleOptions::class => [\GoalioRememberMeDoctrineORM\Options\ModuleOptions::class, 'createViaServiceLocator'],
+            \GoalioRememberMeDoctrineORM\Listener\OnTargetUserEntityDeleteListener::class=>[\GoalioRememberMeDoctrineORM\Listener\OnTargetUserEntityDeleteListener::class, 'createViaServiceLocator'],
+        ],
+    ],
+    'doctrine'=>[
+        'eventmanager' => [
+            'odm_default' => [
+                'subscribers' => [
+                    \GoalioRememberMeDoctrineORM\Listener\OnTargetUserEntityDeleteListener::class,
+                ],
+            ],
+            'orm_default' => [
+                'subscribers' => [
+                    \GoalioRememberMeDoctrineORM\Listener\OnTargetUserEntityDeleteListener::class,
+                ],
+            ],
         ],
     ],
     'goaliorememberme_doctrine' => [

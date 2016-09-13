@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Zend\Form\Annotation as Form;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GoalioRememberMeDoctrineORM\Repository\EntityRepository")
  * @ORM\Table(
  *     name="WM2_User_Cookie_Provider",indexes={
  *          @ORM\Index(name="idx", columns={"sid", "userId"}),
@@ -53,6 +53,7 @@ class RememberMe
     protected $token;
 
     /**
+     * @todo this should be an array
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $userId;

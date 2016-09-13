@@ -25,7 +25,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *
  * @author oprokidnev <oprokidnev@webmotor.ru>
  * @ODM\Document(
- *     collection="cookie_adapter"
+ *     collection="cookie_adapter",
+ *     repositoryClass="GoalioRememberMeDoctrineORM\Repository\EntityRepository"
  * )
  * @ODM\Indexes({
  *   @ODM\Index(keys={"sid"="asc"}),

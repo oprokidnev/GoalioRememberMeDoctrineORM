@@ -21,7 +21,6 @@ namespace GoalioRememberMeDoctrineORM\Mapper;
 
 class RememberMe extends \ZfcBase\Mapper\AbstractDbMapper
 {
-
     public static function createViaServiceLocator($serviceLocator)
     {
         $moduleConfig  = $serviceLocator->get(\GoalioRememberMeDoctrineORM\Options\ModuleOptions::class);
