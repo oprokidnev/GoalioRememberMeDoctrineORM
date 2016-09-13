@@ -12,13 +12,12 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "goalio/goalio-rememberme": "*",
-        "zendframework/zendframework": "2.*"
+        "php": "^5.5 || ^7.0",
+        "goalio/goalio-rememberme": "^1.0 || dev-master"
     },
     "autoload": {
-        "psr-0": {
-            "GoalioRememberMeDoctrineORM": "src/"
+        "psr-4": {
+            "GoalioRememberMeDoctrineORM\\": "src/GoalioRememberMeDoctrineORM"
         }
     },
     "extra": {
