@@ -107,17 +107,19 @@ class OnTargetUserEntityDeleteListener implements \Doctrine\Common\EventSubscrib
      * Mongodb preRemove listener
      * @param \Doctrine\ODM\MongoDB\SoftDelete\Event\LifecycleEventArgs $args
      */
-    public function preSoftDelete(\Doctrine\ODM\MongoDB\SoftDelete\Event\LifecycleEventArgs $args)
+    public function preSoftDelete( $args)
     {
-        $sdm           = $args->getSoftDeleteManager();
-        $objectManager = $sdm->getDocumentManager();
+        if(!$args->getObjectManager() instanceof \Doctrine\ORM\EntityManager){
+            $sdm           = $args->getSoftDeleteManager();
+            $objectManager = $sdm->getDocumentManager();
 
-        $document = $args->getDocument();
-        if (is_a($document, $this->targetClass, true)) {
-            $ids = $objectManager->getMetadataFactory()->getMetadataFor(\Doctrine\Common\Util\ClassUtils::getClass($document))
-                ->getIdentifierValues($document);
+            $document = $args->getDocument();
+            if (is_a($document, $this->targetClass, true)) {
+                $ids = $objectManager->getMetadataFactory()->getMetadataFor(\Doctrine\Common\Util\ClassUtils::getClass($document))
+                    ->getIdentifierValues($document);
 
-            $this->removeRememberMeByUserId(current(array_values($ids)));
+                $this->removeRememberMeByUserId(current(array_values($ids)));
+            }
         }
     }
 
